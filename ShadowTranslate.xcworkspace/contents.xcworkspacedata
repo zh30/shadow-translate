@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace version = "1.0">
+   <FileRef location = "group:apps/ShadowTranslate/ShadowTranslate.xcodeproj"></FileRef>
+   <FileRef location = "group:packages/SharedCore"></FileRef>
+   <FileRef location = "group:packages/InferenceKit"></FileRef>
+   <FileRef location = "group:packages/PersistenceKit"></FileRef>
+   <FileRef location = "group:packages/AccessibilityKit"></FileRef>
+   <FileRef location = "group:packages/ModelManager"></FileRef>
+   <FileRef location = "group:packages/UIKitShared"></FileRef>
+</Workspace>

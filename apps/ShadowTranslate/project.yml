@@ -1,0 +1,66 @@
+name: ShadowTranslate
+options:
+  bundleIdPrefix: dev.shadow
+  deploymentTarget:
+    macOS: "15.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
+    ENABLE_HARDENED_RUNTIME: YES
+    ENABLE_APP_SANDBOX: NO
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    CODE_SIGN_IDENTITY: "-"
+    PRODUCT_BUNDLE_IDENTIFIER: dev.shadow.translate
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    GENERATE_INFOPLIST_FILE: NO
+    INFOPLIST_FILE: Info.plist
+    CODE_SIGN_ENTITLEMENTS: ShadowTranslate.entitlements
+
+packages:
+  SharedCore:
+    path: ../../packages/SharedCore
+  InferenceKit:
+    path: ../../packages/InferenceKit
+  PersistenceKit:
+    path: ../../packages/PersistenceKit
+  AccessibilityKit:
+    path: ../../packages/AccessibilityKit
+  ModelManager:
+    path: ../../packages/ModelManager
+  UIKitShared:
+    path: ../../packages/UIKitShared
+  KeyboardShortcuts:
+    url: https://github.com/sindresorhus/KeyboardShortcuts
+    from: "2.0.0"
+
+targets:
+  ShadowTranslate:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources
+    dependencies:
+      - package: SharedCore
+        product: SharedCore
+      - package: InferenceKit
+        product: InferenceKit
+      - package: PersistenceKit
+        product: PersistenceKit
+      - package: AccessibilityKit
+        product: AccessibilityKit
+      - package: ModelManager
+        product: ModelManager
+      - package: UIKitShared
+        product: UIKitShared
+    settings:
+      base:
+        PRODUCT_NAME: ShadowTranslate
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks"
