@@ -176,6 +176,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = ShadowTranslate;
 				SDKROOT = macosx;
+				SKIP_MACRO_VALIDATION = YES;
 			};
 			name = Release;
 		};
@@ -187,6 +188,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = ShadowTranslate;
 				SDKROOT = macosx;
+				SKIP_MACRO_VALIDATION = YES;
 			};
 			name = Debug;
 		};

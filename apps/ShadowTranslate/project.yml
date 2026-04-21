@@ -64,3 +64,4 @@ targets:
       base:
         PRODUCT_NAME: ShadowTranslate
         LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks"
+        SKIP_MACRO_VALIDATION: YES

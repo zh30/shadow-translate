@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install xcodegen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build
+        run: |
+          xcodebuild -workspace ShadowTranslate.xcworkspace \
+            -scheme ShadowTranslate \
+            -destination 'platform=macOS' \
+            -skipPackagePluginValidation \
+            build 2>&1 | tee build.log | tail -5
+
+      - name: Test
+        run: |
+          xcodebuild -workspace ShadowTranslate.xcworkspace \
+            -scheme ShadowTranslate \
+            -destination 'platform=macOS' \
+            -skipPackagePluginValidation \
+            test 2>&1 | tee test.log | tail -5
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: |
+            build.log
+            test.log
