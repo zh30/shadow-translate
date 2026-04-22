@@ -9,14 +9,18 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../SharedCore"),
-        .package(url: "https://github.com/sindresorhus/KeyboardShortcuts", from: "2.0.0")
+        .package(path: "../InferenceKit"),
+        .package(path: "../ModelManager"),
+        .package(url: "https://github.com/sindresorhus/KeyboardShortcuts", from: "2.0.0"),
     ],
     targets: [
         .target(
             name: "UIKitShared",
             dependencies: [
                 .product(name: "SharedCore", package: "SharedCore"),
-                .product(name: "KeyboardShortcuts", package: "KeyboardShortcuts")
+                .product(name: "InferenceKit", package: "InferenceKit"),
+                .product(name: "ModelManager", package: "ModelManager"),
+                .product(name: "KeyboardShortcuts", package: "KeyboardShortcuts"),
             ]
         ),
         .testTarget(name: "UIKitSharedTests", dependencies: ["UIKitShared"])

@@ -5,6 +5,7 @@ import HuggingFace
 /// Manages model downloads from HuggingFace Hub.
 public actor ModelDownloader {
     private let hubClient: HubClient
+    private var downloadTask: Task<URL, Error>?
 
     public init(hubClient: HubClient = .default) {
         self.hubClient = hubClient
@@ -26,16 +27,29 @@ public actor ModelDownloader {
             isDirectory: true
         )
 
-        let url = try await hubClient.downloadSnapshot(
-            of: repoID,
-            kind: .model,
-            to: destination,
-            matching: ["*.safetensors", "*.json", "*.jinja", "*.txt", "*.model"],
-            progressHandler: progressHandler
-        )
+        let task = Task<URL, Error> {
+            try await hubClient.downloadSnapshot(
+                of: repoID,
+                kind: .model,
+                to: destination,
+                matching: ["*.safetensors", "*.json", "*.jinja", "*.txt", "*.model"],
+                progressHandler: progressHandler
+            )
+        }
+        self.downloadTask = task
+        defer { downloadTask = nil }
+
+        let url = try await task.value
 
         Log.model.info("ModelDownloader.download · completed download for \(modelId)")
         return url
+    }
+
+    /// Cancel an in-progress download.
+    public func cancelDownload() {
+        downloadTask?.cancel()
+        downloadTask = nil
+        Log.model.info("ModelDownloader.cancelDownload · download cancelled")
     }
 
     /// Check if a model is already downloaded locally.

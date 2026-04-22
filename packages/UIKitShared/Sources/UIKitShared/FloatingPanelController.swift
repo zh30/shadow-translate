@@ -9,14 +9,29 @@ public final class FloatingPanelController {
     private var hostingView: NSHostingView<AnyView>?
     private var localMonitor: Any?
     private var globalMonitor: Any?
+    private weak var appState: AppState?
 
     private init() {}
 
+    public func configure(appState: AppState) {
+        self.appState = appState
+    }
+
     public func show<Content: View>(@ViewBuilder content: () -> Content) {
         let view = content()
+        let wrappedView: AnyView
+        if let appState {
+            wrappedView = AnyView(view.environment(appState))
+        } else {
+            wrappedView = AnyView(view)
+        }
 
         if let existingPanel = panel {
-            hostingView?.rootView = AnyView(view)
+            let newHosting = NSHostingView(rootView: wrappedView)
+            newHosting.autoresizingMask = [.width, .height]
+            existingPanel.contentView = newHosting
+            self.hostingView = newHosting
+            newHosting.layoutSubtreeIfNeeded()
             positionPanel(existingPanel)
             existingPanel.makeKeyAndOrderFront(nil)
             installDismissMonitors()
@@ -45,7 +60,7 @@ public final class FloatingPanelController {
         newPanel.hasShadow = true
         newPanel.backgroundColor = .clear
 
-        let hosting = NSHostingView(rootView: AnyView(view))
+        let hosting = NSHostingView(rootView: wrappedView)
         hosting.autoresizingMask = [.width, .height]
         newPanel.contentView = hosting
 
@@ -99,7 +114,7 @@ public final class FloatingPanelController {
         }
 
         globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
-            if let panel = self?.panel, let screen = NSScreen.main {
+            if let panel = self?.panel {
                 let mouse = NSEvent.mouseLocation
                 if !panel.frame.contains(mouse) {
                     self?.hide()

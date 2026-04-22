@@ -88,6 +88,8 @@ private struct ShortcutSettingsView: View {
 // MARK: - Model
 
 private struct ModelSettingsView: View {
+    @Environment(AppState.self) private var appState
+
     var body: some View {
         VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
             HStack(spacing: Theme.Spacing.md) {
@@ -108,8 +110,13 @@ private struct ModelSettingsView: View {
             HStack {
                 Text("模型状态")
                 Spacer()
-                Label("未下载", systemImage: "arrow.down.circle")
-                    .foregroundStyle(.secondary)
+                Label(appState.modelState.label, systemImage: appState.modelState.systemImage)
+                    .foregroundStyle(statusColor)
+            }
+
+            if case .downloading(let progress, _, _) = appState.modelState {
+                ProgressView(value: progress)
+                    .progressViewStyle(.linear)
             }
 
             HStack {
@@ -120,16 +127,47 @@ private struct ModelSettingsView: View {
                     .foregroundStyle(.secondary)
             }
 
-            Button("下载模型") {
-                // Stage 7: Wire up ModelManager download
+            HStack(spacing: Theme.Spacing.md) {
+                switch appState.modelState {
+                case .notDownloaded, .termsRequired:
+                    Button("下载模型") {
+                        Task { await appState.startDownload() }
+                    }
+                    .buttonStyle(.borderedProminent)
+                case .downloading:
+                    Button("取消下载") {
+                        Task { await appState.cancelDownload() }
+                    }
+                    .buttonStyle(.bordered)
+                case .ready:
+                    Button("删除模型") {
+                        Task { await appState.deleteModel() }
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(.red)
+                case .error:
+                    Button("重试下载") {
+                        Task { await appState.startDownload() }
+                    }
+                    .buttonStyle(.borderedProminent)
+                default:
+                    EmptyView()
+                }
             }
-            .buttonStyle(.borderedProminent)
-            .disabled(true)
 
             Spacer()
         }
         .padding(Theme.Spacing.xl)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+
+    private var statusColor: Color {
+        switch appState.modelState {
+        case .ready: .green
+        case .error: .red
+        case .downloading, .loading, .verifying: .blue
+        default: .secondary
+        }
     }
 }
 

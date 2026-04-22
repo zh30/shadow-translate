@@ -14,10 +14,14 @@ public actor InferenceEngine {
 
     public init() {}
 
-    // MARK: - Warm Up
+    // MARK: - State
+
+    public var isReady: Bool { container != nil }
+
+    // MARK: - Warm Up (remote — triggers download)
 
     public func warmUp() async throws {
-        Log.inference.info("InferenceEngine.warmUp · starting model load")
+        Log.inference.info("InferenceEngine.warmUp · starting remote model load")
         MLX.GPU.set(cacheLimit: InferenceKit.Config.gpuCacheLimit)
 
         let config = ModelConfiguration(id: InferenceKit.modelId)
@@ -39,6 +43,43 @@ public actor InferenceEngine {
 
         Log.inference.info("InferenceEngine.warmUp · model ready")
         scheduleIdleTimer()
+    }
+
+    // MARK: - Warm Up (local — from downloaded directory)
+
+    public func warmUpFromDirectory(_ url: URL) async throws {
+        Log.inference.info("InferenceEngine.warmUpFromDirectory · loading from \(url.path)")
+        MLX.GPU.set(cacheLimit: InferenceKit.Config.gpuCacheLimit)
+
+        let config = ModelConfiguration(directory: url)
+        let loaded = try await LLMModelFactory.shared.loadContainer(
+            from: downloader,
+            using: tokenizerLoader,
+            configuration: config
+        )
+        self.container = loaded
+        self.lastUseAt = Date()
+
+        // Run 1-token dummy to warm GPU pipelines
+        let input = try await loaded.prepare(input: UserInput(prompt: "warm up"))
+        let params = GenerateParameters(maxTokens: 1, temperature: 0.01)
+        let stream = try await loaded.generate(input: input, parameters: params)
+        for await generation in stream {
+            if case .info = generation { break }
+        }
+
+        Log.inference.info("InferenceEngine.warmUpFromDirectory · model ready")
+        scheduleIdleTimer()
+    }
+
+    // MARK: - Unload
+
+    public func unload() {
+        Log.inference.info("InferenceEngine.unload · releasing model")
+        container = nil
+        idleTask?.cancel()
+        idleTask = nil
+        MLX.GPU.clearCache()
     }
 
     // MARK: - Translate
@@ -103,17 +144,14 @@ public actor InferenceEngine {
         }
     }
 
-    // MARK: - Unload
+    // MARK: - Unload (idle timeout)
 
     public func unloadIfIdle() {
         guard Date().timeIntervalSince(lastUseAt) >= InferenceKit.Config.idleTimeoutSeconds
         else { return }
 
         Log.inference.info("InferenceEngine.unloadIfIdle · unloading model after idle timeout")
-        container = nil
-        idleTask?.cancel()
-        idleTask = nil
-        MLX.GPU.clearCache()
+        unload()
     }
 
     // MARK: - Private

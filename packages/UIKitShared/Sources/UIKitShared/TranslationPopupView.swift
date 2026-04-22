@@ -2,16 +2,56 @@ import SharedCore
 import SwiftUI
 
 public struct TranslationPopupView: View {
+    @Environment(AppState.self) private var appState
     @State private var sourceLanguage: Language = .auto
     @State private var targetLanguage: Language = .zh
-    @State private var sourceText = ""
+    @State private var sourceText: String
     @State private var translatedText = ""
     @State private var isTranslating = false
     @State private var canReplace = false
 
-    public init() {}
+    public init(initialText: String = "") {
+        self._sourceText = State(wrappedValue: initialText)
+    }
 
     public var body: some View {
+        Group {
+            if appState.modelState.isReady {
+                translationContent
+            } else {
+                modelNotReadyView
+            }
+        }
+        .frame(width: Theme.Size.popupWidth - 32)
+        .padding(Theme.Spacing.lg)
+        .materialBackground()
+    }
+
+    // MARK: - Not Ready
+
+    private var modelNotReadyView: some View {
+        VStack(spacing: Theme.Spacing.lg) {
+            Image(systemName: appState.modelState.systemImage)
+                .font(.largeTitle)
+                .foregroundStyle(.secondary)
+            Text(appState.modelState.label)
+                .font(.headline)
+            if case .notDownloaded = appState.modelState {
+                Text("请在偏好设置中下载模型")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Button("打开偏好设置…") {
+                    NSApp.activate(ignoringOtherApps: true)
+                }
+                .buttonStyle(.bordered)
+            }
+        }
+        .frame(maxWidth: .infinity, minHeight: Theme.Size.popupMinHeight - 32)
+    }
+
+    // MARK: - Translation Content
+
+    private var translationContent: some View {
         VStack(spacing: 0) {
             languageBar
             Divider()
@@ -21,9 +61,6 @@ public struct TranslationPopupView: View {
             Divider()
             actionBar
         }
-        .frame(width: Theme.Size.popupWidth - 32)
-        .padding(Theme.Spacing.lg)
-        .materialBackground()
     }
 
     // MARK: - Language Bar
