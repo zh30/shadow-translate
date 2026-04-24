@@ -1,97 +1,73 @@
 # Repository Guidelines
 
-## Project Overview
+## Project Structure & Module Organization
 
-ShadowTranslate is a macOS translation app using MLX for local LLM inference. It captures selected text via Accessibility APIs, translates it using mlx-community/translategemma-4b, and replaces the original text in-place.
+ShadowTranslate is a macOS menu bar translation app. The main app target lives in `apps/ShadowTranslate/`, with `Sources/` for app entry points, `Info.plist`, and `project.yml` for XcodeGen.
 
-## Project Structure
+Reusable code is split into Swift packages under `packages/`:
 
-```
-shadow-translate/
-├── apps/
-│   └── ShadowTranslate/          # Main app target
-│       ├── Sources/              # AppDelegate, main.swift
-│       ├── project.yml           # XcodeGen configuration
-│       └── Info.plist
-├── packages/                     # 6 Swift package modules
-│   ├── SharedCore/               # Language enum, ShadowError, Logger categories
-│   ├── InferenceKit/             # MLX inference (Gemma 4B)
-│   ├── PersistenceKit/           # SwiftData models + @ModelActor
-│   ├── AccessibilityKit/         # AX read/replace + clipboard fallback
-│   ├── ModelManager/             # HuggingFace Hub downloads
-│   └── UIKitShared/              # SwiftUI views, NSPanel floating popup
-├── ShadowTranslate.xcworkspace   # Xcode workspace
-└── CLAUDE.md                     # Detailed architecture notes
-```
+- `SharedCore`: common language types, errors, and logging categories.
+- `InferenceKit`: MLX local inference for the Gemma translation model.
+- `PersistenceKit`: SwiftData models and model actors.
+- `AccessibilityKit`: Accessibility API text capture/replacement and clipboard fallback.
+- `ModelManager`: HuggingFace model download and local model management.
+- `UIKitShared`: SwiftUI views and floating `NSPanel` UI.
 
-## Build Commands
+Tests live in `packages/<PackageName>/Tests/`. Project documentation is in `README.md`, `README_EN.md`, `docs/`, and `CLAUDE.md`.
+
+## Build, Test, and Development Commands
+
+Regenerate the Xcode project after editing `apps/ShadowTranslate/project.yml`:
 
 ```bash
-# Generate Xcode project from project.yml (required after any project.yml change)
 xcodegen generate
+```
 
-# Build (always pass -skipPackagePluginValidation for MLX/SwiftData macros)
+Build the app through the workspace:
+
+```bash
 xcodebuild -workspace ShadowTranslate.xcworkspace -scheme ShadowTranslate \
   -destination 'platform=macOS' -skipPackagePluginValidation build
+```
 
-# Test
+Run tests:
+
+```bash
 xcodebuild -workspace ShadowTranslate.xcworkspace -scheme ShadowTranslate \
   -destination 'platform=macOS' -skipPackagePluginValidation test
+```
 
-# Run the built app
+Run the debug app:
+
+```bash
 open ~/Library/Developer/Xcode/DerivedData/ShadowTranslate-*/Build/Products/Debug/ShadowTranslate.app
 ```
 
-**Important:** No root `Package.swift` — always use `xcodegen generate` + `xcodebuild` via the workspace.
+There is no root `Package.swift`; use the workspace and XcodeGen flow.
 
-## Coding Style
+## Coding Style & Naming Conventions
 
-- **Swift 6 strict concurrency** — all packages use `swiftLanguageModes: [.v6]`
-- **Actors everywhere** — all shared mutable state must be actor-isolated
-- **4-space indentation**
-- **Trailing closures** for SwiftUI view builders
-- **Explicit self** only when required by Swift 6 isolation
+Use Swift 6 strict concurrency. Keep shared mutable state actor-isolated, prefer `@MainActor` for AppKit/SwiftUI controllers, and use `@preconcurrency import ApplicationServices` where AX APIs lack Sendable annotations. Indent with 4 spaces. Follow Swift naming conventions: types in `UpperCamelCase`, methods and properties in `lowerCamelCase`, and tests named for expected behavior.
 
-## Concurrency Patterns
+## Testing Guidelines
 
-Use `@preconcurrency import ApplicationServices` for AX APIs lacking Sendable annotations. Annotate immutable CFString constants with `nonisolated(unsafe)`.
+Add package tests under `packages/<Name>/Tests/<Name>Tests/`. Focus coverage on concurrency boundaries, SwiftData persistence, model-management state transitions, and AX replacement fallbacks. Run the full `xcodebuild ... test` command before opening a PR.
 
-```swift
-// Correct: Actor-isolated state
-actor InferenceEngine {
-    private var container: ModelContainer?
-    func warmUp() async throws { ... }
-}
+## Commit & Pull Request Guidelines
 
-// Correct: @unchecked Sendable singleton with proper isolation
-@MainActor
-final class FloatingPanelController: @unchecked Sendable {
-    static let shared = FloatingPanelController()
-}
-```
+Git history uses concise imperative subjects, often prefixed by scope or intent, such as `Scaffold ...`, `Implement Stage 2-8: ...`, or `Fix ...`. Keep commits focused.
 
-## Testing
+Pull requests should include a short summary, test results, linked issues when applicable, and screenshots or screen recordings for visible menu bar, onboarding, or floating panel changes. Mention any Accessibility permission, model download, or macOS configuration impact.
 
-Tests live in `packages/<Name>/Tests/`. Run via Xcode scheme or `xcodebuild -scheme ShadowTranslate test`.
+## Security & Configuration Tips
 
-## Commits
+The app targets macOS 15.0+, runs non-sandboxed for AX write access, and uses hardened runtime exceptions for MLX/JIT behavior. Do not re-enable the app sandbox or remove runtime entitlements without validating text replacement and local inference.
 
-Prefix with stage/implement/fix per git history:
 
-```
-Scaffold ShadowTranslate project with modular Swift package architecture
-Implement Stage 2-8: full Mac app with inference, persistence, accessibility
-Fix: AXReplacer now correctly handles empty text selections
-```
+<claude-mem-context>
+# Memory Context
 
-## Key Constraints
+# [shadow-translate] recent context, 2026-04-24 2:09pm GMT+8
 
-- **macOS 15.0+** deployment target
-- **Non-sandboxed** (`ENABLE_APP_SANDBOX: NO`) — required for AX write access
-- **Hardened Runtime** with `disable-library-validation`, `allow-jit`, `allow-unsigned-executable-memory`
-- **LSUIElement = true** — no Dock icon, menu bar only
-- **Model**: ~2.18GB downloaded on first run from HuggingFace Hub
-
-## Architecture Notes
-
-See `CLAUDE.md` for detailed patterns: MLX model lifecycle, dual-track text replacement, SwiftData migration, and incomplete wire-ups.
+No previous sessions found.
+</claude-mem-context>

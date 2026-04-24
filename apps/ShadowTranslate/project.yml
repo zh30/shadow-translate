@@ -60,8 +60,40 @@ targets:
         product: ModelManager
       - package: UIKitShared
         product: UIKitShared
+      - package: KeyboardShortcuts
+        product: KeyboardShortcuts
     settings:
       base:
         PRODUCT_NAME: ShadowTranslate
         LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks"
         SKIP_MACRO_VALIDATION: YES
+  ShadowTranslateTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: Tests
+    dependencies:
+      - target: ShadowTranslate
+      - package: SharedCore
+        product: SharedCore
+      - package: InferenceKit
+        product: InferenceKit
+      - package: PersistenceKit
+        product: PersistenceKit
+      - package: UIKitShared
+        product: UIKitShared
+    settings:
+      base:
+        PRODUCT_NAME: ShadowTranslateTests
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks"
+        SKIP_MACRO_VALIDATION: YES
+
+schemes:
+  ShadowTranslate:
+    build:
+      targets:
+        ShadowTranslate: all
+    test:
+      gatherCoverageData: false
+      targets:
+        - ShadowTranslateTests

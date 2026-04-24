@@ -8,12 +8,19 @@ import UIKitShared
     let appState = AppState()
     private let axReplacer = AXReplacer()
     private var onboardingController: OnboardingWindowController?
+    private var defaultsObserver: NSObjectProtocol?
+    private var configuredHotkeyMode: String?
+    private lazy var deepLHotkeyMonitor = DeepLHotkeyMonitor { [weak self] in
+        self?.togglePopup()
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Log.app.info("Shadow Translate launched · v\(SharedCore.version, privacy: .public)")
         NSApp.setActivationPolicy(.accessory)
 
-        KeyboardShortcuts.setShortcut(.init(.t, modifiers: [.command, .shift]), for: .translatePopup)
+        if KeyboardShortcuts.getShortcut(for: .translatePopup) == nil {
+            KeyboardShortcuts.setShortcut(.init(.t, modifiers: [.command, .shift]), for: .translatePopup)
+        }
 
         KeyboardShortcuts.onKeyUp(for: .translatePopup) { [weak self] in
             // 200 ms delay: give the user time to release all physical modifier keys
@@ -22,9 +29,24 @@ import UIKitShared
                 self?.togglePopup()
             }
         }
+        configureHotkeyMode()
+        defaultsObserver = NotificationCenter.default.addObserver(
+            forName: UserDefaults.didChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.configureHotkeyMode()
+            }
+        }
 
         onboardingController = OnboardingWindowController(appState: appState)
         FloatingPanelController.shared.configure(appState: appState)
+
+        guard !Self.isRunningTests else {
+            Log.app.info("AppDelegate.applicationDidFinishLaunching · skipping model warm-up under tests")
+            return
+        }
 
         Task {
             await appState.checkModelState()
@@ -34,6 +56,31 @@ import UIKitShared
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         false
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        if let defaultsObserver {
+            NotificationCenter.default.removeObserver(defaultsObserver)
+        }
+        deepLHotkeyMonitor.stop()
+    }
+
+    private static var isRunningTests: Bool {
+        ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+    }
+
+    // MARK: - Hotkeys
+
+    private func configureHotkeyMode() {
+        let rawMode = UserDefaults.standard.string(forKey: "hotkeyMode") ?? HotkeyMode.simple.rawValue
+        guard configuredHotkeyMode != rawMode else { return }
+        configuredHotkeyMode = rawMode
+
+        if rawMode == HotkeyMode.deepL.rawValue {
+            _ = deepLHotkeyMonitor.start()
+        } else {
+            deepLHotkeyMonitor.stop()
+        }
     }
 
     // MARK: - Popup

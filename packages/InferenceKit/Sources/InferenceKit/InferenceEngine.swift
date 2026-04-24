@@ -6,6 +6,7 @@ import SharedCore
 
 public actor InferenceEngine {
     private var container: ModelContainer?
+    private var localModelDirectory: URL?
     private var lastUseAt: Date = .distantPast
     private var idleTask: Task<Void, Never>?
 
@@ -22,7 +23,7 @@ public actor InferenceEngine {
 
     public func warmUp() async throws {
         Log.inference.info("InferenceEngine.warmUp · starting remote model load")
-        MLX.GPU.set(cacheLimit: InferenceKit.Config.gpuCacheLimit)
+        MLX.Memory.cacheLimit = InferenceKit.Config.currentGpuCacheLimit
 
         let config = ModelConfiguration(id: InferenceKit.modelId)
         let loaded = try await LLMModelFactory.shared.loadContainer(
@@ -31,6 +32,7 @@ public actor InferenceEngine {
             configuration: config
         )
         self.container = loaded
+        self.localModelDirectory = nil
         self.lastUseAt = Date()
 
         // Run 1-token dummy to warm GPU pipelines
@@ -49,7 +51,7 @@ public actor InferenceEngine {
 
     public func warmUpFromDirectory(_ url: URL) async throws {
         Log.inference.info("InferenceEngine.warmUpFromDirectory · loading from \(url.path)")
-        MLX.GPU.set(cacheLimit: InferenceKit.Config.gpuCacheLimit)
+        MLX.Memory.cacheLimit = InferenceKit.Config.currentGpuCacheLimit
 
         let config = ModelConfiguration(directory: url)
         let loaded = try await LLMModelFactory.shared.loadContainer(
@@ -58,6 +60,7 @@ public actor InferenceEngine {
             configuration: config
         )
         self.container = loaded
+        self.localModelDirectory = url
         self.lastUseAt = Date()
 
         // Run 1-token dummy to warm GPU pipelines
@@ -79,7 +82,7 @@ public actor InferenceEngine {
         container = nil
         idleTask?.cancel()
         idleTask = nil
-        MLX.GPU.clearCache()
+        MLX.Memory.clearCache()
     }
 
     // MARK: - Translate
@@ -90,8 +93,11 @@ public actor InferenceEngine {
         target: Language
     ) -> AsyncStream<String> {
         AsyncStream { continuation in
-            Task { [weak self] in
+            let task = Task { [weak self] in
                 guard let self else {
+                    if InferenceKit.Config.lowMemoryMode {
+                        MLX.Memory.clearCache()
+                    }
                     continuation.finish()
                     return
                 }
@@ -117,9 +123,9 @@ public actor InferenceEngine {
 
                     let input = try await container.prepare(input: UserInput(prompt: prompt))
                     let params = GenerateParameters(
-                        maxTokens: InferenceKit.Config.defaultMaxTokens,
-                        temperature: InferenceKit.Config.defaultTemperature,
-                        topP: InferenceKit.Config.defaultTopP
+                        maxTokens: InferenceKit.Config.currentMaxTokens,
+                        temperature: InferenceKit.Config.currentTemperature,
+                        topP: InferenceKit.Config.currentTopP
                     )
 
                     let stream = try await container.generate(input: input, parameters: params)
@@ -141,13 +147,17 @@ public actor InferenceEngine {
                     continuation.finish()
                 }
             }
+
+            continuation.onTermination = { @Sendable _ in
+                task.cancel()
+            }
         }
     }
 
     // MARK: - Unload (idle timeout)
 
     public func unloadIfIdle() {
-        guard Date().timeIntervalSince(lastUseAt) >= InferenceKit.Config.idleTimeoutSeconds
+        guard Date().timeIntervalSince(lastUseAt) >= InferenceKit.Config.currentIdleTimeoutSeconds
         else { return }
 
         Log.inference.info("InferenceEngine.unloadIfIdle · unloading model after idle timeout")
@@ -162,13 +172,20 @@ public actor InferenceEngine {
 
     private func ensureLoaded() async throws -> ModelContainer? {
         if let container { return container }
-        Log.inference.info("InferenceEngine.ensureLoaded · re-loading model")
+
+        if let localModelDirectory {
+            Log.inference.info("InferenceEngine.ensureLoaded · re-loading model from \(localModelDirectory.path)")
+            try await warmUpFromDirectory(localModelDirectory)
+            return container
+        }
+
+        Log.inference.info("InferenceEngine.ensureLoaded · re-loading model from hub")
         return try await warmUp()
     }
 
     @discardableResult
     private func warmUp() async throws -> ModelContainer? {
-        MLX.GPU.set(cacheLimit: InferenceKit.Config.gpuCacheLimit)
+        MLX.Memory.cacheLimit = InferenceKit.Config.currentGpuCacheLimit
         let config = ModelConfiguration(id: InferenceKit.modelId)
         let loaded = try await LLMModelFactory.shared.loadContainer(
             from: downloader,
@@ -184,7 +201,7 @@ public actor InferenceEngine {
     private func scheduleIdleTimer() {
         idleTask?.cancel()
         idleTask = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(InferenceKit.Config.idleTimeoutSeconds))
+            try? await Task.sleep(for: .seconds(InferenceKit.Config.currentIdleTimeoutSeconds))
             await self?.unloadIfIdle()
         }
     }

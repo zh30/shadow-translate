@@ -8,19 +8,39 @@
 
 /* Begin PBXBuildFile section */
 		0DD9690041AAEB15DD93E142 /* AccessibilityKit in Frameworks */ = {isa = PBXBuildFile; productRef = B4EF00BD9D73F8B7E6BF8902 /* AccessibilityKit */; };
+		0E2D962ED8D50815F1CF318B /* DeepLHotkeyMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 148C4597A9F66A4D929A6E3A /* DeepLHotkeyMonitor.swift */; };
 		5D4961A6EEC937D813340AB1 /* InferenceKit in Frameworks */ = {isa = PBXBuildFile; productRef = C2E4CF8738B66647F7057333 /* InferenceKit */; };
 		6196449DF312BE4C3EB8F3AA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4877F91AC84A8371EE65D0F7 /* AppDelegate.swift */; };
+		6AAE63067570B54275E0902C /* UIKitShared in Frameworks */ = {isa = PBXBuildFile; productRef = 5F5CB4A33E0E967C80B3C542 /* UIKitShared */; };
+		6C6B7C7424887BD859A4E8FC /* PersistenceKit in Frameworks */ = {isa = PBXBuildFile; productRef = 116A2631A0E91060A23DDED0 /* PersistenceKit */; };
 		6D2E21BC8250F6B4A2C8D447 /* ShadowTranslateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5F4A4013C2779F9D0253C1 /* ShadowTranslateApp.swift */; };
 		768A3876A09C3422F1095097 /* UIKitShared in Frameworks */ = {isa = PBXBuildFile; productRef = BEAC0FC01814B23547105C54 /* UIKitShared */; };
+		7AA9234C76075634DC544314 /* InferenceKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1B5C514811F860A9C829CC86 /* InferenceKit */; };
+		83D9F821F964D413606A958A /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = E0CA05EC18D34DFED7B953B0 /* KeyboardShortcuts */; };
 		AE1694B5C182B0269ED3ECDF /* SharedCore in Frameworks */ = {isa = PBXBuildFile; productRef = 29BB9FB217001679B8265E68 /* SharedCore */; };
 		B8AD5DE5F73B7D5A02B43518 /* PersistenceKit in Frameworks */ = {isa = PBXBuildFile; productRef = D50B76A808CF5862FF6FA500 /* PersistenceKit */; };
+		BEFDCECD4C90DB51DDD95988 /* SharedCore in Frameworks */ = {isa = PBXBuildFile; productRef = E6C8DFE694232C9995479C97 /* SharedCore */; };
+		EA0EE1ABEE2963C567747BC8 /* ShadowTranslateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39BD9FD501CFF0AFAA98CFF8 /* ShadowTranslateTests.swift */; };
 		EA33EE697DDE07E95910A27C /* ModelManager in Frameworks */ = {isa = PBXBuildFile; productRef = B338C0E7C1805AF50FC79D69 /* ModelManager */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AF404E52226F1EC2F721C5CC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4814ACD70C6C318E8A05715C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A3FD120E16217EEA7A1D2DC0;
+			remoteInfo = ShadowTranslate;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		00D32F35A76CFDF6BB2ABE3B /* SharedCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SharedCore; path = ../../packages/SharedCore; sourceTree = SOURCE_ROOT; };
 		11AB73995E6FBA6A096713DD /* UIKitShared */ = {isa = PBXFileReference; lastKnownFileType = folder; name = UIKitShared; path = ../../packages/UIKitShared; sourceTree = SOURCE_ROOT; };
+		148C4597A9F66A4D929A6E3A /* DeepLHotkeyMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLHotkeyMonitor.swift; sourceTree = "<group>"; };
 		194AEBD3A2AC433B2A0E4893 /* ShadowTranslate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShadowTranslate.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		26E7874E3DB021CD48DE3A02 /* ShadowTranslateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShadowTranslateTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		39BD9FD501CFF0AFAA98CFF8 /* ShadowTranslateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowTranslateTests.swift; sourceTree = "<group>"; };
 		4877F91AC84A8371EE65D0F7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		57663A04D57B45A05878BF5F /* InferenceKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = InferenceKit; path = ../../packages/InferenceKit; sourceTree = SOURCE_ROOT; };
 		5A5F4A4013C2779F9D0253C1 /* ShadowTranslateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowTranslateApp.swift; sourceTree = "<group>"; };
@@ -30,6 +50,17 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		D1E4F289D0B198C0003BC8D8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BEFDCECD4C90DB51DDD95988 /* SharedCore in Frameworks */,
+				7AA9234C76075634DC544314 /* InferenceKit in Frameworks */,
+				6C6B7C7424887BD859A4E8FC /* PersistenceKit in Frameworks */,
+				6AAE63067570B54275E0902C /* UIKitShared in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F5D815941D215B604FEEFC96 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -40,12 +71,21 @@
 				0DD9690041AAEB15DD93E142 /* AccessibilityKit in Frameworks */,
 				EA33EE697DDE07E95910A27C /* ModelManager in Frameworks */,
 				768A3876A09C3422F1095097 /* UIKitShared in Frameworks */,
+				83D9F821F964D413606A958A /* KeyboardShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		030539682D1548E7CEB14533 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				39BD9FD501CFF0AFAA98CFF8 /* ShadowTranslateTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
 		1DAB8B05B763390CCE30F6F9 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
@@ -63,6 +103,7 @@
 			isa = PBXGroup;
 			children = (
 				194AEBD3A2AC433B2A0E4893 /* ShadowTranslate.app */,
+				26E7874E3DB021CD48DE3A02 /* ShadowTranslateTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -71,6 +112,7 @@
 			isa = PBXGroup;
 			children = (
 				4877F91AC84A8371EE65D0F7 /* AppDelegate.swift */,
+				148C4597A9F66A4D929A6E3A /* DeepLHotkeyMonitor.swift */,
 				5A5F4A4013C2779F9D0253C1 /* ShadowTranslateApp.swift */,
 			);
 			path = Sources;
@@ -81,6 +123,7 @@
 			children = (
 				1DAB8B05B763390CCE30F6F9 /* Packages */,
 				228FC3D17A85E6196FE08A9C /* Sources */,
+				030539682D1548E7CEB14533 /* Tests */,
 				22511080FC9C53D17EDDA099 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,6 +131,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		4B2BF36B29475FA634DF9906 /* ShadowTranslateTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8E995204611F0760B62DCC78 /* Build configuration list for PBXNativeTarget "ShadowTranslateTests" */;
+			buildPhases = (
+				F87D9A23342E7FCF9B30124E /* Sources */,
+				D1E4F289D0B198C0003BC8D8 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8937EEDA025593EB5379725B /* PBXTargetDependency */,
+			);
+			name = ShadowTranslateTests;
+			packageProductDependencies = (
+				E6C8DFE694232C9995479C97 /* SharedCore */,
+				1B5C514811F860A9C829CC86 /* InferenceKit */,
+				116A2631A0E91060A23DDED0 /* PersistenceKit */,
+				5F5CB4A33E0E967C80B3C542 /* UIKitShared */,
+			);
+			productName = ShadowTranslateTests;
+			productReference = 26E7874E3DB021CD48DE3A02 /* ShadowTranslateTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		A3FD120E16217EEA7A1D2DC0 /* ShadowTranslate */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13C74D5DFB4C57E7D7DD8AFB /* Build configuration list for PBXNativeTarget "ShadowTranslate" */;
@@ -107,6 +173,7 @@
 				B4EF00BD9D73F8B7E6BF8902 /* AccessibilityKit */,
 				B338C0E7C1805AF50FC79D69 /* ModelManager */,
 				BEAC0FC01814B23547105C54 /* UIKitShared */,
+				E0CA05EC18D34DFED7B953B0 /* KeyboardShortcuts */,
 			);
 			productName = ShadowTranslate;
 			productReference = 194AEBD3A2AC433B2A0E4893 /* ShadowTranslate.app */;
@@ -121,6 +188,10 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					4B2BF36B29475FA634DF9906 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
 					A3FD120E16217EEA7A1D2DC0 = {
 						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
@@ -151,6 +222,7 @@
 			projectRoot = "";
 			targets = (
 				A3FD120E16217EEA7A1D2DC0 /* ShadowTranslate */,
+				4B2BF36B29475FA634DF9906 /* ShadowTranslateTests */,
 			);
 		};
 /* End PBXProject section */
@@ -161,11 +233,28 @@
 			buildActionMask = 2147483647;
 			files = (
 				6196449DF312BE4C3EB8F3AA /* AppDelegate.swift in Sources */,
+				0E2D962ED8D50815F1CF318B /* DeepLHotkeyMonitor.swift in Sources */,
 				6D2E21BC8250F6B4A2C8D447 /* ShadowTranslateApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F87D9A23342E7FCF9B30124E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EA0EE1ABEE2963C567747BC8 /* ShadowTranslateTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		8937EEDA025593EB5379725B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A3FD120E16217EEA7A1D2DC0 /* ShadowTranslate */;
+			targetProxy = AF404E52226F1EC2F721C5CC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		10652D8FACE38CA2437DB369 /* Release */ = {
@@ -177,6 +266,19 @@
 				PRODUCT_NAME = ShadowTranslate;
 				SDKROOT = macosx;
 				SKIP_MACRO_VALIDATION = YES;
+			};
+			name = Release;
+		};
+		3A937B0ADC03BB570F4AE791 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = ShadowTranslateTests;
+				SDKROOT = macosx;
+				SKIP_MACRO_VALIDATION = YES;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ShadowTranslate.app/Contents/MacOS/ShadowTranslate";
 			};
 			name = Release;
 		};
@@ -335,6 +437,19 @@
 			};
 			name = Release;
 		};
+		DF738BF70ACE96D93D088869 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = ShadowTranslateTests;
+				SDKROOT = macosx;
+				SKIP_MACRO_VALIDATION = YES;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ShadowTranslate.app/Contents/MacOS/ShadowTranslate";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -352,6 +467,15 @@
 			buildConfigurations = (
 				502B7A692F9367F67ADA330E /* Debug */,
 				C5A3F6DE25A736095441D7E2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		8E995204611F0760B62DCC78 /* Build configuration list for PBXNativeTarget "ShadowTranslateTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DF738BF70ACE96D93D088869 /* Debug */,
+				3A937B0ADC03BB570F4AE791 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
@@ -397,9 +521,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		116A2631A0E91060A23DDED0 /* PersistenceKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PersistenceKit;
+		};
+		1B5C514811F860A9C829CC86 /* InferenceKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = InferenceKit;
+		};
 		29BB9FB217001679B8265E68 /* SharedCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SharedCore;
+		};
+		5F5CB4A33E0E967C80B3C542 /* UIKitShared */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UIKitShared;
 		};
 		B338C0E7C1805AF50FC79D69 /* ModelManager */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -420,6 +556,15 @@
 		D50B76A808CF5862FF6FA500 /* PersistenceKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = PersistenceKit;
+		};
+		E0CA05EC18D34DFED7B953B0 /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EF3A94BE447882A27E82EC93 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			productName = KeyboardShortcuts;
+		};
+		E6C8DFE694232C9995479C97 /* SharedCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SharedCore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

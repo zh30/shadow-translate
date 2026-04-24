@@ -10,6 +10,8 @@ let package = Package(
     dependencies: [
         .package(path: "../SharedCore"),
         .package(path: "../InferenceKit"),
+        .package(path: "../PersistenceKit"),
+        .package(path: "../AccessibilityKit"),
         .package(path: "../ModelManager"),
         .package(url: "https://github.com/sindresorhus/KeyboardShortcuts", from: "2.0.0"),
     ],
@@ -19,6 +21,8 @@ let package = Package(
             dependencies: [
                 .product(name: "SharedCore", package: "SharedCore"),
                 .product(name: "InferenceKit", package: "InferenceKit"),
+                .product(name: "PersistenceKit", package: "PersistenceKit"),
+                .product(name: "AccessibilityKit", package: "AccessibilityKit"),
                 .product(name: "ModelManager", package: "ModelManager"),
                 .product(name: "KeyboardShortcuts", package: "KeyboardShortcuts"),
             ]

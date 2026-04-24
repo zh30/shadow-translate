@@ -10,7 +10,7 @@ public actor HistoryWriter {
         sourceLang: Language,
         targetLang: Language,
         sourceApp: String? = nil
-    ) throws -> TranslationRecord {
+    ) throws -> UUID {
         let record = TranslationRecord(
             sourceText: sourceText,
             translatedText: translatedText,
@@ -22,7 +22,7 @@ public actor HistoryWriter {
         modelContext.insert(record)
         try modelContext.save()
         Log.persistence.info("HistoryWriter.insert · saved record \(record.id)")
-        return record
+        return record.id
     }
 
     public func toggleFavorite(_ id: UUID) throws {
@@ -43,7 +43,17 @@ public actor HistoryWriter {
             predicate: #Predicate { $0.id == id }
         )
         guard let record = try modelContext.fetch(descriptor).first else { return }
+        guard !record.tags.contains(where: { $0.name == tag.name }) else { return }
         record.tags.append(tag)
+        try modelContext.save()
+    }
+
+    public func removeTag(_ tagName: String, from id: UUID) throws {
+        let descriptor = FetchDescriptor<TranslationRecord>(
+            predicate: #Predicate { $0.id == id }
+        )
+        guard let record = try modelContext.fetch(descriptor).first else { return }
+        record.tags.removeAll { $0.name == tagName }
         try modelContext.save()
     }
 
@@ -53,6 +63,25 @@ public actor HistoryWriter {
         )
         guard let record = try modelContext.fetch(descriptor).first else { return }
         modelContext.delete(record)
+        try modelContext.save()
+    }
+
+    public func delete(ids: [UUID]) throws {
+        guard !ids.isEmpty else { return }
+        for id in ids {
+            let descriptor = FetchDescriptor<TranslationRecord>(
+                predicate: #Predicate { $0.id == id }
+            )
+            if let record = try modelContext.fetch(descriptor).first {
+                modelContext.delete(record)
+            }
+        }
+        try modelContext.save()
+    }
+
+    public func clearAll() throws {
+        try modelContext.delete(model: TranslationRecord.self)
+        try modelContext.delete(model: Tag.self)
         try modelContext.save()
     }
 

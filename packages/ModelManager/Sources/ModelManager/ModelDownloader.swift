@@ -7,7 +7,11 @@ public actor ModelDownloader {
     private let hubClient: HubClient
     private var downloadTask: Task<URL, Error>?
 
-    public init(hubClient: HubClient = .default) {
+    public init() {
+        self.hubClient = .default
+    }
+
+    public init(hubClient: HubClient) {
         self.hubClient = hubClient
     }
 

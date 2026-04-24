@@ -133,6 +133,22 @@ public final class AppState {
         }
     }
 
+    public func redownloadModel() async {
+        await inferenceEngine.unload()
+        do {
+            try await modelDownloader.deleteModel()
+            modelState = .notDownloaded
+            await startDownload()
+        } catch {
+            Log.model.error("AppState · redownload failed: \(error.localizedDescription)")
+            modelState = .error(error.localizedDescription)
+        }
+    }
+
+    public func localModelDirectory() async -> URL {
+        await modelDownloader.localModelDirectory()
+    }
+
     // MARK: - Terms of Use
 
     public var termsText: String {
