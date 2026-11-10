@@ -1,10 +1,11 @@
 name: CI
 
+# xcodegen + xcodebuild -destination platform=macOS requires a macOS runner
+# and cannot run on Linux. Automatic runs on push/PR were removed on
+# 2026-11-10 to cut Actions cost. Trigger this workflow manually when an
+# Xcode build or test is needed.
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
